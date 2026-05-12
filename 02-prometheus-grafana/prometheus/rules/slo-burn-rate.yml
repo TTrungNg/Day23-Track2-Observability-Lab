@@ -13,27 +13,29 @@ groups:
     interval: 30s
     rules:
       # Recording rules — pre-compute the failure rate at multiple windows
+      # `or vector(0)` handles the zero-error case: without it, an empty error
+      # series makes the entire division return no data instead of 0.
       - record: inference:fail_ratio:rate5m
         expr: |
-          sum(rate(inference_requests_total{status="error"}[5m]))
+          (sum(rate(inference_requests_total{status="error"}[5m])) or vector(0))
           /
           sum(rate(inference_requests_total[5m]))
 
       - record: inference:fail_ratio:rate30m
         expr: |
-          sum(rate(inference_requests_total{status="error"}[30m]))
+          (sum(rate(inference_requests_total{status="error"}[30m])) or vector(0))
           /
           sum(rate(inference_requests_total[30m]))
 
       - record: inference:fail_ratio:rate1h
         expr: |
-          sum(rate(inference_requests_total{status="error"}[1h]))
+          (sum(rate(inference_requests_total{status="error"}[1h])) or vector(0))
           /
           sum(rate(inference_requests_total[1h]))
 
       - record: inference:fail_ratio:rate6h
         expr: |
-          sum(rate(inference_requests_total{status="error"}[6h]))
+          (sum(rate(inference_requests_total{status="error"}[6h])) or vector(0))
           /
           sum(rate(inference_requests_total[6h]))
 
